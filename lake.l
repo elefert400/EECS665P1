@@ -25,6 +25,8 @@ using TokenKind = lake::Parser::token;
 %option c++
 
 DIGIT [0-9]
+ID [a-z] | [A-Z]
+
 
 %%
 %{          /** Code executed at the beginning of yylex **/
@@ -39,19 +41,19 @@ DIGIT [0-9]
 		// represents (declared in scanner.cpp line 9)
 		int tokenKind = TokenKind::CROSS;
 
-		//Instatiate a token. There are 4 classes of tokens defined based on 
+		//Instatiate a token. There are 4 classes of tokens defined based on
 		// - a literal string (StringLitToken)
 		// - a literal integer (IntLitToken)
 		// - an identifier (IDToken)
 		// - a NoArg token (any other type)
 		// The token object is a handy place to keep information about the
 		// token (i.e. token metadata) such as the line and column on which
-		// the token character started (which can be used later in debug 
-		// messages, etc). 
+		// the token character started (which can be used later in debug
+		// messages, etc).
 		Token * token = new NoArgToken(lineNum, charNum, tokenKind);
 
 		//Assign the token to a instance variable of the scanner.
-		// (When Flex processes a .l file in C++ mode, it creates 
+		// (When Flex processes a .l file in C++ mode, it creates
 		// a class called Scanner, which is a subclass of yyFlexScanner)
 		// By assigning a value to this field, we put the token
 		// metadata in a place where scanner's client program can find it.
@@ -82,16 +84,93 @@ DIGIT [0-9]
 
 		//Note that the IntLitToken does not take a TokenKind argument
 		// since it's implicitly known that the token represents an
-		// INTLITERAL		
+		// INTLITERAL
 		yylval->tokenValue = new IntLitToken(lineNum, charNum, intVal);
 
 		//TODO: update the charNum count according to the number of
-		// characters consumed. 
+		// characters consumed.
 
-		//As before, alert the client program that an INTLITERAL 
+		//As before, alert the client program that an INTLITERAL
 		// token was matched
 		return TokenKind::INTLITERAL;
 		}
+
+bool {}
+
+int {}
+
+void {}
+
+true {}
+
+false {}
+
+read {}
+
+write {}
+
+if {}
+
+else {}
+
+while {}
+
+return {}
+
+
+//identifier
+ID | _ . (ID | DIGIT | _)* {}
+
+//string literal
+"*" {}
+
+{ {}
+
+} {}
+
+( {}
+
+) {}
+
+[ {}
+
+] {}
+
+; {}
+
+, {}
+
+"." {}
+
+++ {}
+
+-- {}
+
+* {}
+
+/ {}
+
+! {}
+
+== {}
+
+!= {}
+
+< {}
+
+> {}
+
+<= {}
+
+>= {}
+
+= {}
+
+@ {}
+
+&& {}
+
+|| {}
 
 \n		{
 		//Update the line number, reset the columnNumber
@@ -102,7 +181,7 @@ DIGIT [0-9]
 
 .   {
 		//TODO: Add the rest of the rules above this point so that legal characters
-		// are properly accounted for. 
+		// are properly accounted for.
 		std::string msg = "Illegal character ";
 		msg += yytext;
 		error(lineNum,charNum,msg);
