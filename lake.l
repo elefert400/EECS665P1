@@ -26,6 +26,7 @@ using TokenKind = lake::Parser::token;
 
 DIGIT [0-9]
 ID [a-z] | [A-Z]
+DOT "."
 
 
 %%
@@ -168,7 +169,9 @@ return {
 ID | _ . (ID | DIGIT | _)* {}
 
 //string literal
-"*" {}
+" {
+  BEGIN()
+}
 
 "{" {
   this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 275);
