@@ -92,7 +92,7 @@ DOT "."
 
 		//TODO: update the charNum count according to the number of
 		// characters consumed.
-
+    charNum += yyleng;
 		//As before, alert the client program that an INTLITERAL
 		// token was matched
 		return TokenKind::INTLITERAL;
