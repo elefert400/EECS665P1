@@ -95,27 +95,71 @@ ID [a-z] | [A-Z]
 		return TokenKind::INTLITERAL;
 		}
 
-bool {}
+bool {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 260);
+    charNum = charNum + 4;
+    return 260;
+}
 
-int {}
+int {
+   this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 261);
+   charNum = charNum + 3;
+   return 261;
+}
 
-void {}
+void {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 262);
+  charNum = charNum + 4;
+  return 262;
+}
 
-true {}
+true {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 263);
+  charNum = charNum + 4;
+  return 263;
+}
 
-false {}
+false {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 264);
+  charNum = charNum + 5;
+  return 264;
+}
 
-read {}
+read {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 266);
+  charNum = charNum + 4;
+  return 266;
+}
 
-write {}
+write {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 267);
+  charNum = charNum + 5;
+  return 267;
+}
 
-if {}
+if {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 268);
+  charNum = charNum + 2;
+  return 268;
+}
 
-else {}
+else {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 269);
+  charNum = charNum + 4;
+  return 269;
+}
 
-while {}
+while {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 270);
+  charNum = charNum + 5;
+  return 270;
+}
 
-return {}
+return {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 271);
+  charNum = charNum + 6;
+  return 271;
+}
 
 
 //identifier
@@ -124,53 +168,143 @@ ID | _ . (ID | DIGIT | _)* {}
 //string literal
 "*" {}
 
-{ {}
+"{" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 275);
+  charNum++;
+  return 275;
+}
 
-} {}
+"}" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 276);
+  charNum++;
+  return 276;
+}
 
-( {}
+"(" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 277);
+  charNum++;
+  return 277;
+}
 
-) {}
+")" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 278);
+  charNum++;
+  return 278;
+}
 
-[ {}
+"[" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 279);
+  charNum++;
+  return 279;
+}
 
-] {}
+"]" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 280);
+  charNum++;
+  return 280;
+}
 
-; {}
+";" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 281);
+  charNum++;
+  return 281;
+}
 
-, {}
+"," {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 282);
+  charNum++;
+  return 282;
+}
 
-"." {}
+"." {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 283);
+  charNum++;
+  return 283;
+}
 
-++ {}
+"++" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 284);
+  charNum++;
+  return 284;
+}
 
--- {}
+"--" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 285);
+  charNum++;
+  return 285;
+}
 
-* {}
+"*" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 288);
+  charNum++;
+  return 288;
+}
 
-/ {}
+"/" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 289);
+  charNum++;
+  return 289;
+}
 
-! {}
+"!" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 290);
+  charNum++;
+  return 290;
+}
 
-== {}
+"==" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 293);
+  charNum = charNum + 2;
+  return 293;
+}
 
-!= {}
+"!=" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 294);
+  charNum = charNum + 2;
+  return 294;
+}
 
-< {}
+"<" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 295);
+  charNum++;
+  return 295;
+}
 
-> {}
+">" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 296);
+  charNum++;
+  return 296;
+}
 
-<= {}
+"<=" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 297);
+  charNum = charNum + 2;
+  return 297;
+}
 
->= {}
+">=" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 298);
+  charNum = charNum + 2;
+  return 298;
+}
 
-= {}
+"=" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 299);
+  charNum++;
+  return 299;
+}
 
-@ {}
+"&&" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 291);
+  charNum = charNum + 2;
+  return 291;
+}
 
-&& {}
-
-|| {}
+"||" {
+  this->yylval->tokenValue = new NoArgToken(lineNum, charNum, 292);
+  charNum = charNum + 2;
+  return 292;
+}
 
 \n		{
 		//Update the line number, reset the columnNumber
