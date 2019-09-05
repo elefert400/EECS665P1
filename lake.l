@@ -79,6 +79,8 @@ ID [a-z] | [A-Z]
 {DIGIT}+	{
 		//TODO: The following computation of the integer
 		// value does not check for overflow. It should do so.
+    //if((INT_MAX - atoi(yytext) > 0){intVal = atoi(yytext);}
+
 		int intVal = atoi(yytext);
 
 
