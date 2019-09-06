@@ -23,11 +23,12 @@ using TokenKind = lake::Parser::token;
 %option yyclass="lake::Scanner"
 %option noyywrap
 %option c++
+%x STR
 
 DIGIT [0-9]
 ID [a-z] | [A-Z]
 DOT "."
-
+badEscapedChar [\\][^nt'\"\\]
 
 %%
 %{          /** Code executed at the beginning of yylex **/
@@ -80,10 +81,12 @@ DOT "."
 {DIGIT}+	{
 		//TODO: The following computation of the integer
 		// value does not check for overflow. It should do so.
-    //if((INT_MAX - atoi(yytext) > 0){intVal = atoi(yytext);}
+    //if((INT_MAX - atol(yytext) > 0){intVal = atoi(yytext);}
 
-		int intVal = atoi(yytext);
-
+		//int intVal = atoi(yytext);
+    int intVal;
+    if((INT_MAX - atol(yytext) > 0){intVal = atoi(yytext);}
+    else{intVal = INT_MAX;}
 
 		//Note that the IntLitToken does not take a TokenKind argument
 		// since it's implicitly known that the token represents an
@@ -166,11 +169,44 @@ return {
 
 
 //identifier
-ID | _ . (ID | DIGIT | _)* {}
+/*??Should we take out the dot?
+  ({ID}|_)({ID}|{DIGIT}|_)* EDIT
+  ID | _ . (ID | DIGIT | _)* ORIGINAL
+*/
+({ID}|_)({ID}|{DIGIT}|_)* {
+  this->yylval->tokenValue = new IDtoken(lineNum, charNum, yytext);
+  charNum += yyleng;
+  return TokenKind::ID;
+}
 
 //string literal
-" {
-  BEGIN()
+<INITIAL>\" {
+  BEGIN(STR);
+  charNum++;
+}
+
+<STR>[^{badEscapedChar}]*  {
+  //relax
+}
+
+<STR>\" {
+  this->yylval->tokenValue = new StringLitToken(lineNum, charNum, yytext);
+  BEGIN(INITIAL);
+  return TokenKind::STRINGLITERAL;
+}
+
+//catches newlines in string literals
+<STR>\n		{
+    //no need to incr lineNum as we have no terminated string yet
+		//lineNum++;
+    //increment character number by 1
+		charNum++;
+}
+
+//catches unterminated string literal
+<STR><<EOF>>  {
+  error(lineNum,charNum,"unterminated string literal ignored and ignore the unterminated string literal" );
+  charNum += yyleng;
 }
 
 "{" {
@@ -310,12 +346,21 @@ ID | _ . (ID | DIGIT | _)* {}
   charNum = charNum + 2;
   return 292;
 }
-
-\n		{
-		//Update the line number, reset the columnNumber
-		lineNum++;
-		charNum = 0;
-		}
+//catches basic newlines in actual input code
+\n  {
+  lineNum++;
+  charNum++;
+}
+//catches tabs
+\t  {
+  //consume the length of a tab
+  //or could +=8 for length of tab manually
+  charNum+=yyleng;
+}
+//catches individual ws characters as a group of 1 or more
+[" "]+  {
+  charNum+=yyleng;
+}
 
 
 .   {
