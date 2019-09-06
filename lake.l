@@ -24,6 +24,7 @@ using TokenKind = lake::Parser::token;
 %option noyywrap
 %option c++
 %x STR
+%x COM
 
 DIGIT [0-9]
 ID [a-z] | [A-Z]
@@ -85,8 +86,17 @@ badEscapedChar [\\][^nt'\"\\]
 
 		//int intVal = atoi(yytext);
     int intVal;
-    if((INT_MAX - atol(yytext) > 0){intVal = atoi(yytext);}
-    else{intVal = INT_MAX;}
+    long intMax = INT_MAX;
+    if(((intMax - atol(yytext)) > 0)
+    {
+      intVal = atoi(yytext);
+    }
+    else
+    {
+      intVal = INT_MAX;
+      std::string msg = "integer literal too large;";
+      error(lineNum,charNum,msg);
+    }
 
 		//Note that the IntLitToken does not take a TokenKind argument
 		// since it's implicitly known that the token represents an
@@ -205,7 +215,8 @@ return {
 
 //catches unterminated string literal
 <STR><<EOF>>  {
-  error(lineNum,charNum,"unterminated string literal ignored and ignore the unterminated string literal" );
+  std::string msg = "unterminated string literal ignored and ignore the unterminated string literal";
+  error(lineNum,charNum,msg);
   charNum += yyleng;
 }
 
@@ -352,14 +363,17 @@ return {
   charNum++;
 }
 //catches tabs
-\t  {
+[ \t]  {
   //consume the length of a tab
   //or could +=8 for length of tab manually
-  charNum+=yyleng;
+  //charNum+=yyleng;
 }
-//catches individual ws characters as a group of 1 or more
-[" "]+  {
-  charNum+=yyleng;
+<INITIAL> #   {
+  BEGIN(COM); yymore();
+}
+<COM>\n   {
+  lineNum++;
+  BEGIN(INITIAL);
 }
 
 
