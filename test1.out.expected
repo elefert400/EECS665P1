@@ -11,4 +11,6 @@ ID:_ab15c_
 STRINGLIT:"ab\nc"
 STRINGLIT:"\n"
 STRINGLIT:"include a quote like this \" and a backslash like this \\"
+INTLIT:2147483646
+STRINGLIT:"backslash followed by space: \ is not allowed"
 EOF

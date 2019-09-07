@@ -7,5 +7,7 @@ return
 read
 "ab\nc"
 "\n"
-#yellow
 "include a quote like this \" and a backslash like this \\"
+#flash
+2147483646
+"backslash followed by space: \ is not allowed"
