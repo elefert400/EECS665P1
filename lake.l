@@ -27,9 +27,10 @@ using TokenKind = lake::Parser::token;
 %x COM
 
 DIGIT [0-9]
-ID [a-z] | [A-Z]
-DOT "."
-badEscapedChar [\\][^nt'\"\\]
+ID [a-z]|[A-Z]
+validStringChar \\.|[^"\\]
+QUOTE [\"]
+workingID ({ID}|_)({ID}|{DIGIT}|_)*
 
 %%
 %{          /** Code executed at the beginning of yylex **/
@@ -87,14 +88,14 @@ badEscapedChar [\\][^nt'\"\\]
 		//int intVal = atoi(yytext);
     int intVal;
     long intMax = INT_MAX;
-    if(((intMax - atol(yytext)) > 0)
+    if((intMax - atol(yytext)) > 0)
     {
       intVal = atoi(yytext);
     }
     else
     {
       intVal = INT_MAX;
-      std::string msg = "integer literal too large;";
+      std::string msg = "integer literal too large; using max value and return MAX_INT as the value for that token.";
       error(lineNum,charNum,msg);
     }
 
@@ -177,43 +178,30 @@ return {
   return 271;
 }
 
-
-//identifier
-/*??Should we take out the dot?
-  ({ID}|_)({ID}|{DIGIT}|_)* EDIT
-  ID | _ . (ID | DIGIT | _)* ORIGINAL
-*/
-({ID}|_)({ID}|{DIGIT}|_)* {
-  this->yylval->tokenValue = new IDtoken(lineNum, charNum, yytext);
+{workingID} {
+  this->yylval->tokenValue = new IDToken(lineNum, charNum, yytext);
   charNum += yyleng;
   return TokenKind::ID;
 }
 
-//string literal
-<INITIAL>\" {
+<INITIAL>{QUOTE}  {
   BEGIN(STR);
-  charNum++;
+  yymore();
+  //charNum++;
 }
 
-<STR>[^{badEscapedChar}]*  {
+<STR>{validStringChar}* {
   //relax
+  yymore();
 }
 
-<STR>\" {
+<STR>{QUOTE}  {
   this->yylval->tokenValue = new StringLitToken(lineNum, charNum, yytext);
   BEGIN(INITIAL);
+  charNum+=yyleng;
   return TokenKind::STRINGLITERAL;
 }
 
-//catches newlines in string literals
-<STR>\n		{
-    //no need to incr lineNum as we have no terminated string yet
-		//lineNum++;
-    //increment character number by 1
-		charNum++;
-}
-
-//catches unterminated string literal
 <STR><<EOF>>  {
   std::string msg = "unterminated string literal ignored and ignore the unterminated string literal";
   error(lineNum,charNum,msg);
@@ -357,25 +345,28 @@ return {
   charNum = charNum + 2;
   return 292;
 }
-//catches basic newlines in actual input code
+
 \n  {
   lineNum++;
-  charNum++;
+  charNum = 0;
 }
-//catches tabs
-[ \t]  {
+
+[ \t] {
   //consume the length of a tab
   //or could +=8 for length of tab manually
   //charNum+=yyleng;
 }
-<INITIAL> #   {
+
+<INITIAL>#  {
   BEGIN(COM); yymore();
 }
-<COM>\n   {
+<COM>.  {
+
+}
+<COM>\n {
   lineNum++;
   BEGIN(INITIAL);
 }
-
 
 .   {
 		//TODO: Add the rest of the rules above this point so that legal characters

@@ -2,4 +2,13 @@
 -
 +
 INTLIT:1
+while
+and
+return
+INTLIT:5
+ID:_ab15c_
+>>
+STRINGLIT:"ab\nc"
+STRINGLIT:"\n"
+STRINGLIT:"include a quote like this \" and a backslash like this \\"
 EOF
